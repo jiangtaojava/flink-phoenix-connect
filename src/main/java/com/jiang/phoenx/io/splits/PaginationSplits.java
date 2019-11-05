@@ -5,6 +5,7 @@ import org.apache.flink.core.io.InputSplit;
 /**
  * @Author : jt
  * @Description : 分页拆分器
+ *              根据数据总数与页码计算当前查询的数据条数与偏移量
  * @Date : Create in 9:40 2019/11/4
  */
 public class PaginationSplits implements InputSplit {
@@ -15,29 +16,15 @@ public class PaginationSplits implements InputSplit {
 
     private Integer dataNumber;
 
+    private Integer step;
+
     @Override
     public int getSplitNumber() {
         return pageNumber;
     }
 
-    public Integer getPageNumber(){
-        return this.pageNumber;
-    }
-
-    public Integer getDataNumber(){
-        return this.dataNumber;
-    }
-
-    public Integer getTotalNumberOfSplits(){
-        return totalNumberOfPartitions;
-    }
-
     public Boolean isPagination(){
         return totalNumberOfPartitions > 1;
-    }
-
-    private Integer getOffsetNum(){
-        return dataNumber / totalNumberOfPartitions;
     }
 
     /**
@@ -46,17 +33,16 @@ public class PaginationSplits implements InputSplit {
      * @return
      */
     public Integer getStartNumber(){
-        Integer offsetNum = getOffsetNum();
-        return offsetNum * pageNumber;
+        return step * pageNumber;
     }
 
     /**
      * 获取当前页的数据量
-     * 如果是最后一页,把余下除不尽的数据加上
+     * 如果是最后一页,把余数加上
      * @return
      */
     public Integer getPageSize(){
-        Integer pageSize = dataNumber / totalNumberOfPartitions;
+        Integer pageSize = step;
         if(pageNumber == totalNumberOfPartitions - 1){
             Integer remainder = this.dataNumber % totalNumberOfPartitions;
             pageSize = pageSize + remainder;
@@ -77,5 +63,6 @@ public class PaginationSplits implements InputSplit {
         this.pageNumber = pageNumber;
         this.totalNumberOfPartitions = totalNumberOfPartitions;
         this.dataNumber = dataNumber;
+        this.step = dataNumber / totalNumberOfPartitions;
     }
 }
