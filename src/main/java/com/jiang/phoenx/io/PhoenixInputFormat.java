@@ -184,7 +184,6 @@ public class PhoenixInputFormat extends RichInputFormat<Row, InputSplit> impleme
                 statement.setInt(2, split.getStartNumber());
             }
             resultSet = statement.executeQuery();
-            hasNext = resultSet.next();
         } catch (SQLException e) {
             throw new IOException(e);
         }

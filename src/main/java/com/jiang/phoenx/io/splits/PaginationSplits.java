@@ -36,13 +36,18 @@ public class PaginationSplits implements InputSplit {
         return totalNumberOfPartitions > 1;
     }
 
+    private Integer getOffsetNum(){
+        return dataNumber / totalNumberOfPartitions;
+    }
+
     /**
      * 获取查询偏移量
      * 起始点为 分页数 * 单页数据量
      * @return
      */
     public Integer getStartNumber(){
-        return pageNumber * dataNumber / totalNumberOfPartitions;
+        Integer offsetNum = getOffsetNum();
+        return offsetNum * pageNumber;
     }
 
     /**
